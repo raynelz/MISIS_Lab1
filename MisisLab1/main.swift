@@ -8,64 +8,64 @@
 import Foundation
 
 // Функция для вычисления наибольшего общего делителя (НОД)
-func gcd(_ a: Int, _ b: Int) -> Int {
-	var a = a
-	var b = b
-	while b != 0 {
-		let temp = b
-		b = a % b
-		a = temp
+func greatestCommonDivisor(_ firstNumber: Int, _ secondNumber: Int) -> Int {
+	var remainderA = firstNumber
+	var remainderB = secondNumber
+	while remainderB != 0 {
+		let temporaryRemainder = remainderB
+		remainderB = remainderA % remainderB
+		remainderA = temporaryRemainder
 	}
-	return a
+	return remainderA
 }
 
 // Функция для вычисления наименьшего общего кратного (НОК)
-func lcm(_ a: Int, _ b: Int) -> Int {
-	return a / gcd(a, b) * b
+func leastCommonMultiple(_ firstNumber: Int, _ secondNumber: Int) -> Int {
+	return firstNumber / greatestCommonDivisor(firstNumber, secondNumber) * secondNumber
 }
 
 // Функция для вычисления НОК трех чисел
-func lcmOfThree(_ a: Int, _ b: Int, _ c: Int) -> Int {
-	return lcm(lcm(a, b), c)
+func leastCommonMultipleOfThree(_ firstNumber: Int, _ secondNumber: Int, _ thirdNumber: Int) -> Int {
+	return leastCommonMultiple(leastCommonMultiple(firstNumber, secondNumber), thirdNumber)
 }
 
 // Класс для игры НОК
 class LCMGame {
-	private let maxNumber = 100
+	private let maxNumber = 50
 	private let roundsCount = 3
 	private var playerName: String = ""
-	
-	// Запуск игры
+
 	func start() {
 		print("Welcome to the Brain Games!")
-		print()
-		
-		print("May I have your name?", terminator: " ")
+
+		print("May I have your name?\n")
 		if let name = readLine(), !name.isEmpty {
 			playerName = name
-			print("Hello, \(playerName)!")
-			print()
-			
+			print("Hello, \(playerName)!\n")
+
 			print("Find the smallest common multiple of given numbers.")
-			print()
-			
+
 			playRounds()
 		} else {
 			print("Name cannot be empty. Please restart the game.")
 		}
 	}
-	
+
 	private func playRounds() {
 		for _ in 1...roundsCount {
-			let num1 = Int.random(in: 1...maxNumber)
-			let num2 = Int.random(in: 1...maxNumber)
-			let num3 = Int.random(in: 1...maxNumber)
-			
-			let correctAnswer = lcmOfThree(num1, num2, num3)
-			
-			print("Question: \(num1) \(num2) \(num3)")
+			let firstRandomNumber = Int.random(in: 1...maxNumber)
+			let secondRandomNumber = Int.random(in: 1...maxNumber)
+			let thirdRandomNumber = Int.random(in: 1...maxNumber)
+
+			let correctAnswer = leastCommonMultipleOfThree(
+				firstRandomNumber,
+				secondRandomNumber,
+				thirdRandomNumber
+			)
+
+			print("Question: \(firstRandomNumber) \(secondRandomNumber) \(thirdRandomNumber)")
 			print("Your answer:", terminator: " ")
-			
+
 			if let userInput = readLine(), let userAnswer = Int(userInput) {
 				if userAnswer == correctAnswer {
 					print("Correct!")
@@ -81,11 +81,10 @@ class LCMGame {
 				return
 			}
 		}
-		
+
 		print("Congratulations, \(playerName)!")
 	}
 }
 
-// Запуск игры
 let game = LCMGame()
 game.start()

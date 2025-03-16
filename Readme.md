@@ -5,6 +5,7 @@
 *Группа:* БИВТ-22-СП-4
 
 *Язык программирования:* Swift,
+
 *Линтер*: SwiftLint (https://github.com/realm/SwiftLint)
 
 **Значок maintability:**

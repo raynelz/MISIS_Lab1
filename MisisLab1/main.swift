@@ -1,66 +1,44 @@
-//
-//  main.swift
-//  MisisLab1
-//
-//  Created by Захар Литвинчук on 05.03.2025.
-//
-
 import Foundation
 
-class LCMGame {
-	private let maxNumber = 50
-	private let roundsCount = 3
-	private var playerName: String = ""
+protocol Game {
+	var playerName: String { get set }
+	var roundsCount: Int { get }
+
+	func start()
+	func generateQuestion() -> (question: String, correctAnswer: Int)
+	func playRounds()
+}
+
+class BaseGame: Game {
+	var playerName: String = ""
+	var roundsCount: Int = 3
 
 	func start() {
 		print("Welcome to the Brain Games!")
-
-		print("May I have your name?\n")
+		print("May I have your name?", terminator: " ")
 		if let name = readLine(), !name.isEmpty {
 			playerName = name
-			print("Hello, \(playerName)!\n")
-
-			print("Find the smallest common multiple of given numbers.")
-
+			print("Hello, \(playerName)!")
+			printGameDescription()
 			playRounds()
 		} else {
 			print("Name cannot be empty. Please restart the game.")
 		}
 	}
-	
-	private func greatestCommonDivisor(_ firstNumber: Int, _ secondNumber: Int) -> Int {
-		var remainderA = firstNumber
-		var remainderB = secondNumber
-		while remainderB != 0 {
-			let temporaryRemainder = remainderB
-			remainderB = remainderA % remainderB
-			remainderA = temporaryRemainder
-		}
-		return remainderA
+
+	func printGameDescription() {
+		// Переопределяется в дочерних классах
 	}
 
-	private func leastCommonMultiple(_ firstNumber: Int, _ secondNumber: Int) -> Int {
-		return firstNumber / greatestCommonDivisor(firstNumber, secondNumber) * secondNumber
+	func generateQuestion() -> (question: String, correctAnswer: Int) {
+		fatalError("This method must be overridden by subclasses")
 	}
 
-	private func leastCommonMultipleOfThree(_ firstNumber: Int, _ secondNumber: Int, _ thirdNumber: Int) -> Int {
-		return leastCommonMultiple(leastCommonMultiple(firstNumber, secondNumber), thirdNumber)
-	}
-
-	private func playRounds() {
+	func playRounds() {
 		for _ in 1...roundsCount {
-			let firstRandomNumber = Int.random(in: 1...maxNumber)
-			let secondRandomNumber = Int.random(in: 1...maxNumber)
-			let thirdRandomNumber = Int.random(in: 1...maxNumber)
+			let (questionString, correctAnswer) = generateQuestion()
 
-			let correctAnswer = leastCommonMultipleOfThree(
-				firstRandomNumber,
-				secondRandomNumber,
-				thirdRandomNumber
-			)
-
-			print("Question: \(firstRandomNumber) \(secondRandomNumber) \(thirdRandomNumber)")
-			print("Answer: \(correctAnswer)\n")
+			print(questionString)
 			print("Your answer:", terminator: " ")
 
 			if let userInput = readLine(), let userAnswer = Int(userInput) {
@@ -83,66 +61,72 @@ class LCMGame {
 	}
 }
 
-let lcmGame = LCMGame()
-lcmGame.start()
+class LCMGame: BaseGame {
+	private let maxNumber = 50
 
-
-class GeometricProgressionGame {
-	private let minLength = 5
-	private let maxLength = 10
-	private let roundsCount = 3
-	private var playerName: String = ""
-
-	func start() {
-		print("Welcome to the Brain Games!")
-		print("May I have your name?", terminator: " ")
-		if let name = readLine(), !name.isEmpty {
-			playerName = name
-			print("Hello, \(playerName)!")
-			print("What number is missing in the progression?")
-			playRounds()
-		} else {
-			print("Name cannot be empty. Please restart the game.")
-		}
+	override func printGameDescription() {
+		print("Find the least common multiple of three numbers.")
 	}
 
+	override func generateQuestion() -> (question: String, correctAnswer: Int) {
+		let firstRandomNumber = Int.random(in: 1...maxNumber)
+		let secondRandomNumber = Int.random(in: 1...maxNumber)
+		let thirdRandomNumber = Int.random(in: 1...maxNumber)
 
-	private func playRounds() {
-		for _ in 1...roundsCount {
-			let progression = generateGeometricProgression()
-			let hiddenIndex = Int.random(in: 0..<progression.count)
-			let hiddenValue = progression[hiddenIndex]
+		let correctAnswer = leastCommonMultipleOfThree(
+			firstRandomNumber,
+			secondRandomNumber,
+			thirdRandomNumber
+		)
 
-			var questionString = "Question:"
-			for (index, number) in progression.enumerated() {
-				if index == hiddenIndex {
-					questionString += " .."
-				} else {
-					questionString += " \(number)"
-				}
-			}
+		let questionString = "Question: \(firstRandomNumber) \(secondRandomNumber) \(thirdRandomNumber)"
 
-			print(questionString)
-			print("Answer: \(hiddenValue)\n")
-			print("Your answer:", terminator: " ")
+		return (questionString, correctAnswer)
+	}
 
-			if let userInput = readLine(), let userAnswer = Int(userInput) {
-				if userAnswer == hiddenValue {
-					print("Correct!")
-					print()
-				} else {
-					print("'\(userAnswer)' is wrong answer ;(. Correct answer was '\(hiddenValue)'.")
-					print("Let's try again, \(playerName)!")
-					return
-				}
+	private func greatestCommonDivisor(_ firstNumber: Int, _ secondNumber: Int) -> Int {
+		var remainderA = firstNumber
+		var remainderB = secondNumber
+		while remainderB != 0 {
+			let temporaryRemainder = remainderB
+			remainderB = remainderA % remainderB
+			remainderA = temporaryRemainder
+		}
+		return remainderA
+	}
+
+	private func leastCommonMultiple(_ firstNumber: Int, _ secondNumber: Int) -> Int {
+		return firstNumber / greatestCommonDivisor(firstNumber, secondNumber) * secondNumber
+	}
+
+	private func leastCommonMultipleOfThree(_ firstNumber: Int, _ secondNumber: Int, _ thirdNumber: Int) -> Int {
+		return leastCommonMultiple(leastCommonMultiple(firstNumber, secondNumber), thirdNumber)
+	}
+}
+
+class GeometricProgressionGame: BaseGame {
+	private let minLength = 5
+	private let maxLength = 10
+
+	override func printGameDescription() {
+		print("What number is missing in the progression?")
+	}
+
+	override func generateQuestion() -> (question: String, correctAnswer: Int) {
+		let progression = generateGeometricProgression()
+		let hiddenIndex = Int.random(in: 0..<progression.count)
+		let hiddenValue = progression[hiddenIndex]
+
+		var questionString = "Question:"
+		for (index, number) in progression.enumerated() {
+			if index == hiddenIndex {
+				questionString += " .."
 			} else {
-				print("Invalid input. Please enter a number.")
-				print("Let's try again, \(playerName)!")
-				return
+				questionString += " \(number)"
 			}
 		}
 
-		print("Congratulations, \(playerName)!")
+		return (questionString, hiddenValue)
 	}
 
 	private func generateGeometricProgression() -> [Int] {
@@ -162,6 +146,9 @@ class GeometricProgressionGame {
 		return progression
 	}
 }
+
+let lcmGame = LCMGame()
+lcmGame.start()
 
 let gmGame = GeometricProgressionGame()
 gmGame.start()

@@ -1,3 +1,5 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/f446ab6976b773fd7f36/maintainability)](https://codeclimate.com/github/raynelz/MISIS_Lab1/maintainability)
+
 # Лабораторная №1 по дисциплине "Методология разработки ПО"
 
 *Выполнил:* Литвинчук Захар
@@ -7,10 +9,6 @@
 *Язык программирования:* Swift,
 
 *Линтер*: SwiftLint (https://github.com/realm/SwiftLint)
-
-**Значок maintability:**
-
-![Maintability](Maintability.png)
 
 ---
 
